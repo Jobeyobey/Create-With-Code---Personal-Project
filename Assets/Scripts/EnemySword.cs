@@ -6,8 +6,9 @@ public class EnemySword : MonoBehaviour
 {
     private GameObject target;
     private Rigidbody enemyRb;
+    private Vector3 moveDir;
 
-    public int damping = 1;
+    public int damping = 50;
     public float speed = 1f;
     public bool atCastle = false;
 
@@ -21,19 +22,18 @@ public class EnemySword : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Move towards castle
         if (!atCastle)
         {
-            transform.Translate(new Vector3(1, 0, 0) * Time.deltaTime * speed);
+            // Move towards castle
+            moveDir = (target.transform.position - transform.position);
+            transform.Translate(moveDir.normalized * Time.deltaTime * speed, Space.World);
 
             // Keep unit on floor
             transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
         }
 
         // Look towards castle
-        Vector3 lookDir = new Vector3(0, 90, 0);
-        lookDir.y = 0;
-        var rotation = Quaternion.LookRotation(lookDir);
+        var rotation = Quaternion.LookRotation(moveDir);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
     }
 

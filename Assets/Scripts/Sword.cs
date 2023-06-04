@@ -19,7 +19,8 @@ public class Sword : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.CompareTag("Enemy") && Input.GetKeyDown(KeyCode.Space))
+        // Destroy enemy if player attacks with Space when in contact
+        if (other.gameObject.CompareTag("Enemy") && Input.GetKey(KeyCode.Space))
         {
             Destroy(other.gameObject);
         }

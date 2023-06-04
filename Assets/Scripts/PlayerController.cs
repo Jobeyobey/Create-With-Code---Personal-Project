@@ -8,6 +8,10 @@ public class PlayerController : MonoBehaviour
     private float moveSpeed = 7f;
     private float xBound = 15f;
     private float zBound = 4f;
+    private Vector3 oldPosition;
+    private Vector3 newPosition;
+    private Vector3 lookDir;
+    private int damping = 50;
 
     // Other variables
     private Rigidbody playerRb;
@@ -28,6 +32,9 @@ public class PlayerController : MonoBehaviour
     // Move player according to player input
     void MovePlayer()
     {
+        // Save current position for rotation later
+        oldPosition = transform.position;
+
         // Reset movement to 0
         float moveX = 0f;
         float moveZ = 0f;
@@ -53,6 +60,17 @@ public class PlayerController : MonoBehaviour
         // Move player using normalized movements values
         Vector3 moveDir = new Vector3(moveX, 0f, moveZ).normalized;
         transform.position += moveDir * Time.deltaTime * moveSpeed;
+
+        // Save new position for rotation
+        newPosition = transform.position;
+
+        // If moving, face direction of travel
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
+        {
+            lookDir = (newPosition - oldPosition).normalized;
+            var rotation = Quaternion.LookRotation(lookDir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
+        }
     }
 
     // Keep player in bounds
