@@ -7,7 +7,7 @@ public class EnemyArcher : MonoBehaviour
     private GameObject target;
     private Rigidbody enemyRb;
 
-    public int damping = 1;
+    public int damping = 50;
     public float speed = 1f;
     public bool inPosition = false;
 
