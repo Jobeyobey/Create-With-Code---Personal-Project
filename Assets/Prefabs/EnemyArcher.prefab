@@ -107,9 +107,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6285109811163263352}
   serializedVersion: 2
-  m_Mass: 60
-  m_Drag: 5
-  m_AngularDrag: 5
+  m_Mass: 150
+  m_Drag: 20
+  m_AngularDrag: 20
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb4fc0bfff47b5143b6d1f6b07affa25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  arrowPrefab: {fileID: 3693047649890812140, guid: 2f839df897172224696c1b01073818fe, type: 3}
   damping: 50
   speed: 5
   inPosition: 0
