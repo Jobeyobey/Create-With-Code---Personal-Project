@@ -6,6 +6,7 @@ public class EnemyArcher : MonoBehaviour
 {
     private GameObject target;
     private Rigidbody enemyRb;
+    private Animator enemyAnim;
     public GameObject arrowPrefab;
 
     public int damping = 50;
@@ -18,6 +19,7 @@ public class EnemyArcher : MonoBehaviour
     {
         target = GameObject.Find("Castle");
         enemyRb = GetComponent<Rigidbody>();
+        enemyAnim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -37,6 +39,8 @@ public class EnemyArcher : MonoBehaviour
                 CancelInvoke();
                 isFiring = false;
             }
+
+            enemyAnim.SetBool("isRunning", true);
         }
 
         // Check if in position to fire
@@ -45,11 +49,12 @@ public class EnemyArcher : MonoBehaviour
             // Begin firing
             if (!isFiring)
             {
-                InvokeRepeating("FireArrow", 1, 3);
+                InvokeRepeating("Attack", 1, 3);
                 isFiring = true;
             }
 
             inPosition = true;
+            enemyAnim.SetBool("isRunning", false);
         }
 
         // Look towards castle
@@ -59,10 +64,21 @@ public class EnemyArcher : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
     }
 
-    void FireArrow()
+    void Attack()
     {
+        // Attack animation
+        enemyAnim.SetTrigger("doAttack");
+
+        // Arrow spawn
+        StartCoroutine(FireArrow());
+    }
+
+    IEnumerator FireArrow()
+    {
+        yield return new WaitForSeconds(0.5f);
+
         // Arrow spawn position
-        Vector3 spawnPos = new Vector3(transform.position.x + 1, 0.5f, transform.position.z);
+        Vector3 spawnPos = new Vector3(transform.position.x + 1, 1.5f, transform.position.z);
 
         Instantiate(arrowPrefab, spawnPos, arrowPrefab.transform.rotation);
     }

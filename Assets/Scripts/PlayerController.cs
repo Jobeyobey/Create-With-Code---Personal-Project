@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     // Movement variables
-    private float moveSpeed = 7f;
+    private float moveSpeed = 5f;
     private float xBound = 15f;
     private float zBound = 4f;
     private Vector3 oldPosition;
@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour
         }
         
         // Attack
-        if (Input.GetKey(KeyCode.Space) && (Time.time - attackCountdown) > 1.0f)
+        if (Input.GetKey(KeyCode.Space) && (Time.time - attackCountdown) > attackCooldown)
         {
             playerAnim.SetTrigger("doAttack");
             attackCountdown = Time.time;
