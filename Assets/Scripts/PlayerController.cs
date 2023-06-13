@@ -14,12 +14,18 @@ public class PlayerController : MonoBehaviour
     private int damping = 50;
 
     // Other variables
+    public GameObject sword;
     private Rigidbody playerRb;
+    private Animator playerAnim;
+    public float attackCooldown = 1.0f;
+    public float attackCountdown = 0;
+    public float attackSpeed = 0.3f;
 
     // Start is called before the first frame update
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
+        playerAnim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -70,7 +76,26 @@ public class PlayerController : MonoBehaviour
             lookDir = (newPosition - oldPosition).normalized;
             var rotation = Quaternion.LookRotation(lookDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
+            playerAnim.SetBool("isRunning", true);
         }
+        else
+        {
+            playerAnim.SetBool("isRunning", false);
+        }
+        
+        // Attack
+        if (Input.GetKey(KeyCode.Space) && (Time.time - attackCountdown) > 1.0f)
+        {
+            playerAnim.SetTrigger("doAttack");
+            attackCountdown = Time.time;
+            StartCoroutine(SwordDelay());
+        }
+    }
+
+    private IEnumerator SwordDelay()
+    {
+        yield return new WaitForSeconds(attackSpeed);
+        sword.GetComponent<Sword>().DestroyTarget();
     }
 
     // Keep player in bounds
