@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Sword : MonoBehaviour
 {
-    private GameObject target;
+    public GameObject target;
 
     // Start is called before the first frame update
     void Start()
@@ -20,22 +20,27 @@ public class Sword : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        // Destroy enemy if player attacks with Space when in contact
-        if (other.gameObject.CompareTag("Enemy"))
+        if (other.gameObject.CompareTag("Enemy") || other.gameObject.CompareTag("Player"))
         {
             target = other.gameObject;
         }
-        else
-        {
-            target = null;
-        }
     }
 
-    public void DestroyTarget()
+    private void OnTriggerExit(Collider other)
     {
-        if (target)
+        target = null;
+    }
+
+
+    public void DamageTarget()
+    {
+        if (target.CompareTag("Enemy"))
         {
-            Destroy(target);
+            target.GetComponent<EnemyHP>().TakeDamage();
+        }
+        else if (target.CompareTag("Player"))
+        {
+            target.GetComponent<PlayerController>().TakeDamage();
         }
     }
 }

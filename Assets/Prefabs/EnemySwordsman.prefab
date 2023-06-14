@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5611919427395140610}
   - component: {fileID: 5611919427395140617}
   - component: {fileID: 5611919427395140622}
+  - component: {fileID: -4132004675462092616}
   m_Layer: 0
   m_Name: EnemySwordsman
   m_TagString: Enemy
@@ -96,10 +97,10 @@ BoxCollider:
   m_GameObject: {fileID: 5611919427395140611}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.56025726, y: 1.9528481, z: 0.4908929}
+  m_Center: {x: 0.015438408, y: 0.47642404, z: -0.040086508}
 --- !u!54 &5611919427395140617
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -134,6 +135,20 @@ MonoBehaviour:
   attackCooldown: 1.5
   attackCountdown: 0
   attackSpeed: 0.3
+  attackDamage: 2
+--- !u!114 &-4132004675462092616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5611919427395140611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75a1ca4dd68d3df4aa82d83a7677d50c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyHP: 2
 --- !u!1001 &8354824718612512470
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -256,21 +271,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1438546959266459337, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
   m_PrefabInstance: {fileID: 8354824718612512470}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &7732437199579695781 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1782702501690864755, guid: 60770bdb4dc667c45bea53db0339dc05, type: 3}
-  m_PrefabInstance: {fileID: 8354824718612512470}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &1125366367615693084
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7732437199579695781}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.71225905, y: 1.8762963, z: 0.45689297}
-  m_Center: {x: -0.01497376, y: 0.96044266, z: -0.051144123}

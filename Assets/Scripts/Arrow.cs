@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    public float speed = 15.0f;
-
+    private GameManager gameManager;
     private Rigidbody arrowRb;
+
+    public float speed = 15.0f;
+    public int attackDamage = 1;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         arrowRb = GetComponent<Rigidbody>();
 
         // Fire arrow in direction of castle
@@ -30,6 +33,11 @@ public class Arrow : MonoBehaviour
         if (!collision.gameObject.CompareTag("enemy"))
         {
             Destroy(gameObject);
+        }
+
+        if (collision.gameObject.CompareTag("Castle"))
+        {
+            gameManager.AdjustCastleHP(-attackDamage);
         }
     }
 }

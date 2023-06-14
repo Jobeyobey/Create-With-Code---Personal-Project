@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6285109811163263355}
   - component: {fileID: 6285109811163263350}
   - component: {fileID: 6285109811163263351}
+  - component: {fileID: 6765564555256767758}
   m_Layer: 0
   m_Name: EnemyArcher
   m_TagString: Enemy
@@ -96,10 +97,10 @@ BoxCollider:
   m_GameObject: {fileID: 6285109811163263352}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.46844292, y: 1.8551644, z: 0.565365}
+  m_Center: {x: -0.024514198, y: 0.4275822, z: -0.012992412}
 --- !u!54 &6285109811163263350
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -133,6 +134,19 @@ MonoBehaviour:
   speed: 5
   inPosition: 0
   isFiring: 0
+--- !u!114 &6765564555256767758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6285109811163263352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75a1ca4dd68d3df4aa82d83a7677d50c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyHP: 1
 --- !u!1001 &458591818426648409
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -166,7 +180,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4393496376346426, guid: b8b1f673afe204743824d4094dc4d7ca, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4393496376346426, guid: b8b1f673afe204743824d4094dc4d7ca, type: 3}
       propertyPath: m_LocalRotation.x
@@ -174,7 +188,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4393496376346426, guid: b8b1f673afe204743824d4094dc4d7ca, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4393496376346426, guid: b8b1f673afe204743824d4094dc4d7ca, type: 3}
       propertyPath: m_LocalRotation.z
@@ -186,7 +200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4393496376346426, guid: b8b1f673afe204743824d4094dc4d7ca, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4393496376346426, guid: b8b1f673afe204743824d4094dc4d7ca, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -259,21 +273,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4393496376346426, guid: b8b1f673afe204743824d4094dc4d7ca, type: 3}
   m_PrefabInstance: {fileID: 458591818426648409}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &458177032921349273 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1965107420363712, guid: b8b1f673afe204743824d4094dc4d7ca, type: 3}
-  m_PrefabInstance: {fileID: 458591818426648409}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &6254525675544183027
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 458177032921349273}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.6821324, y: 1.8475254, z: 0.47725472}
-  m_Center: {x: 0.027129233, y: 0.9301764, z: -0.039930955}

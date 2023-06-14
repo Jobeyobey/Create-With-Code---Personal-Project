@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private GameManager gameManager;
+
     // Movement variables
-    private float moveSpeed = 5f;
+    private float moveSpeed = 6f;
     private float xBound = 15f;
     private float zBound = 4f;
     private Vector3 oldPosition;
@@ -17,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public GameObject sword;
     private Rigidbody playerRb;
     private Animator playerAnim;
+    public int playerHP = 5;
     public float attackCooldown = 1.0f;
     public float attackCountdown = 0;
     public float attackSpeed = 0.3f;
@@ -24,6 +27,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         playerRb = GetComponent<Rigidbody>();
         playerAnim = GetComponentInChildren<Animator>();
     }
@@ -31,7 +35,19 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MovePlayer();
+        if (gameManager.isGameActive)
+        {
+            CheckBlock();
+            if (!playerAnim.GetBool("isBlocking"))
+            {
+                CheckAttack();
+                MovePlayer();
+            }
+        } 
+        else if (gameManager.gameStatus == "Castle Destroyed")
+        {
+            playerAnim.SetBool("isRunning", false);
+        }
         ConstrainPlayerPosition();
     }
 
@@ -64,7 +80,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // Move player using normalized movements values
-        Vector3 moveDir = new Vector3(moveX, 0f, moveZ).normalized;
+        Vector3 moveDir = new Vector3(moveX, 0.0000001f, moveZ).normalized;
         transform.position += moveDir * Time.deltaTime * moveSpeed;
 
         // Save new position for rotation
@@ -82,20 +98,70 @@ public class PlayerController : MonoBehaviour
         {
             playerAnim.SetBool("isRunning", false);
         }
-        
+    }
+
+    private void CheckAttack()
+    {
         // Attack
         if (Input.GetKey(KeyCode.Space) && (Time.time - attackCountdown) > attackCooldown)
         {
+            // Run attack animation
             playerAnim.SetTrigger("doAttack");
+
+            // Reset attack cooldown
             attackCountdown = Time.time;
+
+            // Run sword hit routine (Delays damage by 0.3f to line up with animation)
             StartCoroutine(SwordDelay());
         }
+    }
+
+    private void CheckBlock()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            playerAnim.SetBool("isBlocking", true);
+        }
+        if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            playerAnim.SetBool("isBlocking", false);
+        }
+    }
+
+    private void PlayerDeath()
+    {
+        playerAnim.SetBool("isDead", true);
+        gameManager.GameOver("Player Dead");
     }
 
     private IEnumerator SwordDelay()
     {
         yield return new WaitForSeconds(attackSpeed);
-        sword.GetComponent<Sword>().DestroyTarget();
+        sword.GetComponent<Sword>().DamageTarget();
+    }
+
+    public void TakeDamage()
+    {
+        // Only take damage if player isn't blocking
+        if (!playerAnim.GetBool("isBlocking"))
+        {
+            playerHP -= 1;
+
+            if (playerHP < 0)
+            {
+                playerHP = 0;
+            }
+
+            if (playerHP == 0)
+            {
+                PlayerDeath();
+            }
+        }
+    }
+
+    public void HealPlayer()
+    {
+        playerHP += 1;
     }
 
     // Keep player in bounds

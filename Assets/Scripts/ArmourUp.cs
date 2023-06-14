@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class ArmourUp : MonoBehaviour
 {
+    private GameManager gameManager;
+    private PlayerController playerController;
+
+    public int repairStrength = 5;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -21,6 +27,8 @@ public class ArmourUp : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             Destroy(gameObject);
+            gameManager.AdjustCastleHP(repairStrength);
+            playerController.HealPlayer();
         }
     }
 }
