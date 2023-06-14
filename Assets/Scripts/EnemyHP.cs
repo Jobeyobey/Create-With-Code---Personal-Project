@@ -24,10 +24,8 @@ public class EnemyHP : MonoBehaviour
 
         if (enemyHP == 0)
         {
-            Debug.Log("First Set");
             if (gameObject.name == "EnemySwordsman(Clone)")
             {
-                Debug.Log("Second Set");
                 gameObject.GetComponent<EnemySword>().Death();
             }
             else if (gameObject.name == "EnemyArcher(Clone)")

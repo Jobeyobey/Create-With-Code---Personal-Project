@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     private GameManager gameManager;
 
     // Movement variables
+    private Footsteps footsteps;
     private float moveSpeed = 6f;
     private float xBound = 15f;
     private float zBound = 4f;
@@ -17,12 +18,16 @@ public class PlayerController : MonoBehaviour
 
     // Other variables
     public GameObject sword;
+    public AudioSource deathSource;
+    public AudioClip[] deathSounds;
+    private int randomSound;
     private Rigidbody playerRb;
     private Animator playerAnim;
     public int playerHP = 5;
     public float attackCooldown = 1.0f;
     public float attackCountdown = 0;
     public float attackSpeed = 0.3f;
+    private bool isAlive = true;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +35,7 @@ public class PlayerController : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         playerRb = GetComponent<Rigidbody>();
         playerAnim = GetComponentInChildren<Animator>();
+        footsteps = GetComponent<Footsteps>();
     }
 
     // Update is called once per frame
@@ -37,6 +43,7 @@ public class PlayerController : MonoBehaviour
     {
         if (gameManager.isGameActive)
         {
+            // Only allow player to move or attack if they are not blocking
             CheckBlock();
             if (!playerAnim.GetBool("isBlocking"))
             {
@@ -89,6 +96,7 @@ public class PlayerController : MonoBehaviour
         // If moving, face direction of travel
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
         {
+            footsteps.WalkSound();
             lookDir = (newPosition - oldPosition).normalized;
             var rotation = Quaternion.LookRotation(lookDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
@@ -130,8 +138,16 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerDeath()
     {
-        playerAnim.SetBool("isDead", true);
-        gameManager.GameOver("Player Dead");
+        if (isAlive)
+        {
+            randomSound = Random.Range(0, deathSounds.Length);
+            deathSource.clip = deathSounds[randomSound];
+            deathSource.Play();
+
+            playerAnim.SetBool("isDead", true);
+            gameManager.GameOver("Player Dead");
+            isAlive = false;
+        }
     }
 
     private IEnumerator SwordDelay()

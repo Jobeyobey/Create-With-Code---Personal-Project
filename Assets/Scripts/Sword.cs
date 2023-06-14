@@ -5,6 +5,7 @@ using UnityEngine;
 public class Sword : MonoBehaviour
 {
     public GameObject target;
+    public AudioSource hitEnemy;
 
     // Start is called before the first frame update
     void Start()
@@ -37,10 +38,12 @@ public class Sword : MonoBehaviour
         if (target.CompareTag("Enemy"))
         {
             target.GetComponent<EnemyHP>().TakeDamage();
+            hitEnemy.Play();
         }
         else if (target.CompareTag("Player"))
         {
             target.GetComponent<PlayerController>().TakeDamage();
+            hitEnemy.Play();
         }
     }
 }

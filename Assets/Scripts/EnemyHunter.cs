@@ -7,6 +7,9 @@ public class EnemyHunter : MonoBehaviour
     private GameManager gameManager;
     private GameObject player;
     private PlayerController playerController;
+    private Footsteps footsteps;
+    public AudioSource deathSource;
+    public AudioClip[] deathSounds;
     private Vector3 hunterPos;
     private Vector3 playerPos;
     private Vector3 moveDir;
@@ -27,6 +30,7 @@ public class EnemyHunter : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        footsteps = GetComponentInChildren<Footsteps>();
         player = GameObject.Find("Player");
         playerController = player.GetComponent<PlayerController>();
         enemyAnim = GetComponentInChildren<Animator>();
@@ -53,6 +57,7 @@ public class EnemyHunter : MonoBehaviour
 
                 atPlayer = false;
                 enemyAnim.SetBool("isRunning", true);
+                footsteps.WalkSound();
             }
             else
             {
@@ -72,6 +77,7 @@ public class EnemyHunter : MonoBehaviour
         else if (gameManager.gameStatus == "Castle Destroyed" && isAlive)
         {
             enemyAnim.SetBool("isRunning", true);
+            footsteps.WalkSound();
 
             // Move into center of bridge
             if (transform.position.z < -2 || transform.position.z > 2)
@@ -120,7 +126,13 @@ public class EnemyHunter : MonoBehaviour
 
     public void Death()
     {
+        var randomSound = Random.Range(0, deathSounds.Length);
+        deathSource.clip = deathSounds[randomSound];
+        deathSource.Play();
+
         isAlive = false;
         enemyAnim.SetBool("isDead", true);
+        Destroy(gameObject.GetComponent<Rigidbody>());
+        Destroy(gameObject.GetComponent<BoxCollider>());
     }
 }

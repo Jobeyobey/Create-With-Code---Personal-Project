@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,14 +11,21 @@ public class GameManager : MonoBehaviour
     public string gameStatus = "Menu";
     public bool isGameActive = false;
     public GameObject titleScreen;
+    public GameObject gameOverScreen;
+    public TextMeshProUGUI gameOverTitle;
     public Button startButton;
+    public Button restartButton;
 
     // Castle
     public GameObject castleDoors;
     public int castleHP = 100;
+    public AudioSource gateSound;
+    public TextMeshProUGUI castleText;
 
     // Player
     private PlayerController playerController;
+    public int playerHP = 5;
+    public TextMeshProUGUI playerText;
 
     // Prefabs
     public GameObject[] enemyBasic;
@@ -31,15 +40,19 @@ public class GameManager : MonoBehaviour
     // Armour spawn restrictions
     private float armourBoundX = 14f;
 
+    // Sound
+    public AudioSource startHorn;
+
     // Start is called before the first frame update
     public void StartGame()
     {
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
-        playerController.playerHP = 5;
+        playerController.playerHP = playerHP;
 
         titleScreen.gameObject.SetActive(false);
         isGameActive = true;
         castleHP = 100;
+        startHorn.Play();
 
         InvokeRepeating("SpawnBasicEnemy", 2, 3);
         InvokeRepeating("SpawnHunter", 15, 15);
@@ -49,7 +62,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        castleText.text = "Castle: " + castleHP;
+        playerText.text = "Player: " + playerController.playerHP;
     }
 
     // Prefab Spawning
@@ -97,6 +111,7 @@ public class GameManager : MonoBehaviour
         // If castleHP falls to 0, game over
         if (castleHP == 0)
         {
+            gateSound.Play();
             castleDoors.gameObject.SetActive(false);
             GameOver("Castle Destroyed");
         }
@@ -106,7 +121,22 @@ public class GameManager : MonoBehaviour
     {
         gameStatus = status;
         isGameActive = false;
-        titleScreen.gameObject.SetActive(true);
         CancelInvoke();
+
+        gameOverScreen.gameObject.SetActive(true);
+
+        if (gameStatus == "Castle Destroyed")
+        {
+            gameOverTitle.text = "The castle has fallen";
+        }
+        else
+        {
+            gameOverTitle.text = "You have fallen";
+        }
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

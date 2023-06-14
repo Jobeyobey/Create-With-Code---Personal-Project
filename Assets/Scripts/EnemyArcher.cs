@@ -5,10 +5,14 @@ using UnityEngine;
 public class EnemyArcher : MonoBehaviour
 {
     private GameManager gameManager;
+    public AudioSource bowSound;
     private GameObject target;
     private Rigidbody enemyRb;
     private Animator enemyAnim;
     public GameObject arrowPrefab;
+    private Footsteps footsteps;
+    public AudioSource deathSource;
+    public AudioClip[] deathSounds;
 
     private bool isAlive = true;
     public int damping = 50;
@@ -20,6 +24,7 @@ public class EnemyArcher : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        footsteps = GetComponentInChildren<Footsteps>();
         target = GameObject.Find("Castle");
         enemyRb = GetComponent<Rigidbody>();
         enemyAnim = GetComponentInChildren<Animator>();
@@ -46,6 +51,7 @@ public class EnemyArcher : MonoBehaviour
                 }
 
                 enemyAnim.SetBool("isRunning", true);
+                footsteps.WalkSound();
             }
 
             // Check if in position to fire
@@ -72,6 +78,7 @@ public class EnemyArcher : MonoBehaviour
         {
             CancelInvoke();
             enemyAnim.SetBool("isRunning", true);
+            footsteps.WalkSound();
 
             var moveDir = new Vector3(20, 0.5f, 0) - transform.position;
             transform.Translate(moveDir.normalized * Time.deltaTime * speed, Space.World);
@@ -101,13 +108,19 @@ public class EnemyArcher : MonoBehaviour
 
         // Arrow spawn position
         Vector3 spawnPos = new Vector3(transform.position.x + 1, 1.5f, transform.position.z);
+        bowSound.Play();
 
         Instantiate(arrowPrefab, spawnPos, arrowPrefab.transform.rotation);
     }
 
     public void Death()
     {
+        var randomSound = Random.Range(0, deathSounds.Length);
+        deathSource.clip = deathSounds[randomSound];
+        deathSource.Play();
+
         isAlive = false;
+        CancelInvoke();
         enemyAnim.SetBool("isDead", true);
         Destroy(gameObject.GetComponent<Rigidbody>());
         Destroy(gameObject.GetComponent<BoxCollider>());

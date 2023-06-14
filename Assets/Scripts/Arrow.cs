@@ -30,7 +30,7 @@ public class Arrow : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Destroy arrow if collides with non-enemy object
-        if (!collision.gameObject.CompareTag("enemy"))
+        if (!collision.gameObject.CompareTag("Enemy"))
         {
             Destroy(gameObject);
         }

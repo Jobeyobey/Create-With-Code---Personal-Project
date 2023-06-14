@@ -5,9 +5,13 @@ using UnityEngine;
 public class EnemySword : MonoBehaviour
 {
     private GameManager gameManager;
+    public AudioSource stoneSound;
+    public AudioSource deathSource;
+    public AudioClip[] deathSounds;
     private GameObject target;
     private Rigidbody enemyRb;
     private Animator enemyAnim;
+    private Footsteps footsteps;
     private Vector3 moveDir;
 
     private bool isAlive = true;
@@ -23,6 +27,7 @@ public class EnemySword : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        footsteps = GetComponentInChildren<Footsteps>();
         target = GameObject.Find("Castle");
         enemyRb = GetComponent<Rigidbody>();
         enemyAnim = GetComponentInChildren<Animator>();
@@ -45,6 +50,7 @@ public class EnemySword : MonoBehaviour
 
                 // Set run
                 enemyAnim.SetBool("isRunning", true);
+                footsteps.WalkSound();
 
                 atCastle = false;
             }
@@ -72,6 +78,7 @@ public class EnemySword : MonoBehaviour
         {
             atCastle = false;
             enemyAnim.SetBool("isRunning", true);
+            footsteps.WalkSound();
 
             // Move into center of bridge
             if (transform.position.z < -2 || transform.position.z > 2)
@@ -102,10 +109,15 @@ public class EnemySword : MonoBehaviour
     {
         enemyAnim.SetTrigger("doAttack");
         gameManager.AdjustCastleHP(-attackDamage);
+        stoneSound.Play();
     }
 
     public void Death()
     {
+        var randomSound = Random.Range(0, deathSounds.Length);
+        deathSource.clip = deathSounds[randomSound];
+        deathSource.Play();
+
         isAlive = false;
         enemyAnim.SetBool("isDead", true);
         Destroy(gameObject.GetComponent<Rigidbody>());
