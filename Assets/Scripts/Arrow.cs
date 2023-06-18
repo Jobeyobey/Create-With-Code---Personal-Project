@@ -7,8 +7,7 @@ public class Arrow : MonoBehaviour
     private GameManager gameManager;
     private Rigidbody arrowRb;
 
-    public float speed = 15.0f;
-    public int attackDamage = 1;
+    [SerializeField] private int attackDamage = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +34,7 @@ public class Arrow : MonoBehaviour
             Destroy(gameObject);
         }
 
+        // Damage castle if collides with castle
         if (collision.gameObject.CompareTag("Castle"))
         {
             gameManager.AdjustCastleHP(-attackDamage);

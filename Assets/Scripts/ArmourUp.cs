@@ -7,7 +7,8 @@ public class ArmourUp : MonoBehaviour
     private GameManager gameManager;
     private PlayerController playerController;
 
-    public int repairStrength = 5;
+    [SerializeField] private int repairStrength = 5;
+    [SerializeField] private int healStrength = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -24,11 +25,12 @@ public class ArmourUp : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Heal castle and player
         if (other.gameObject.CompareTag("Player"))
         {
             Destroy(gameObject);
             gameManager.AdjustCastleHP(repairStrength);
-            playerController.HealPlayer();
+            playerController.HealPlayer(healStrength);
         }
     }
 }

@@ -2,35 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySword : MonoBehaviour
+public class EnemySwordsman : MonoBehaviour
 {
     private GameManager gameManager;
-    public AudioSource stoneSound;
-    public AudioSource deathSource;
-    public AudioClip[] deathSounds;
-    private GameObject target;
-    private Rigidbody enemyRb;
     private Animator enemyAnim;
-    private Footsteps footsteps;
+    private Vector3 castlePosition;
+
+    // Status
+    private bool isAlive = true;
+    private bool atCastle = false;
+
+    // Movement
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private int damping = 2;
     private Vector3 moveDir;
 
-    private bool isAlive = true;
-    public int damping = 50;
-    public float speed = 1f;
-    public bool atCastle = false;
-    public float attackCooldown = 1.5f;
-    public float attackCountdown = 0;
-    public float attackSpeed = 0.3f;
-    public int attackDamage = 2;
+    // Attack
+    [SerializeField] private float attackPosition = 15;
+    [SerializeField] private float attackCooldown = 1.5f;
+    [SerializeField] private int attackDamage = 2;
+    private float attackCountdown = 0;
+
+    // Audio
+    private Footsteps footsteps;
+    [SerializeField] private AudioSource stoneSound;
+    [SerializeField] private AudioSource deathSource;
+    [SerializeField] private AudioClip[] deathSounds;
 
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         footsteps = GetComponentInChildren<Footsteps>();
-        target = GameObject.Find("Castle");
-        enemyRb = GetComponent<Rigidbody>();
         enemyAnim = GetComponentInChildren<Animator>();
+        castlePosition = GameObject.Find("Castle").GetComponent<Transform>().position;
     }
 
     // Update is called once per frame
@@ -39,8 +44,10 @@ public class EnemySword : MonoBehaviour
         if (gameManager.gameStatus != "Castle Destroyed" && isAlive)
         {
             // If far from castle, move towards castle
-            if (transform.position.x < 15)
+            if (transform.position.x < attackPosition)
             {
+                atCastle = false;
+
                 // Move towards castle
                 moveDir = Vector3.right;
                 transform.Translate(moveDir.normalized * Time.deltaTime * speed, Space.World);
@@ -48,24 +55,24 @@ public class EnemySword : MonoBehaviour
                 // Keep unit on floor
                 transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
 
-                // Set run
+                // Set run animation
                 enemyAnim.SetBool("isRunning", true);
                 footsteps.WalkSound();
-
-                atCastle = false;
             }
             // Else if close to castle, stop moving
             else if (isAlive)
             {
-                enemyAnim.SetBool("isRunning", false);
                 atCastle = true;
+                enemyAnim.SetBool("isRunning", false);
             }
 
             // If at castle, attack
             if (atCastle && (Time.time - attackCountdown) > attackCooldown && isAlive)
             {
-                attackCountdown = Time.time;
                 Attack();
+
+                // Track time of attack for attack cooldown
+                attackCountdown = Time.time;
             }
 
             // Always look towards castle
@@ -80,7 +87,7 @@ public class EnemySword : MonoBehaviour
             enemyAnim.SetBool("isRunning", true);
             footsteps.WalkSound();
 
-            // Move into center of bridge
+            // If not in line with doors, move closer to center of bridge
             if (transform.position.z < -2 || transform.position.z > 2)
             {
                 moveDir = new Vector3(15, 0.5f, 0) - transform.position;
@@ -89,7 +96,7 @@ public class EnemySword : MonoBehaviour
                 var rotation = Quaternion.LookRotation(moveDir);
                 transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
             }
-            else
+            else // If inline with doors, run into castle
             {
                 moveDir = Vector3.right;
                 transform.Translate(moveDir.normalized * Time.deltaTime * speed, Space.World);
@@ -99,7 +106,8 @@ public class EnemySword : MonoBehaviour
             }
         }
 
-        if (transform.position.x > 18)
+        // Destroy unit upon entering castle
+        if (transform.position.x > castlePosition.x + 2)
         {
             Destroy(gameObject);
         }
@@ -114,10 +122,12 @@ public class EnemySword : MonoBehaviour
 
     public void Death()
     {
+        // Play a random death sound
         var randomSound = Random.Range(0, deathSounds.Length);
         deathSource.clip = deathSounds[randomSound];
         deathSource.Play();
 
+        // Run death animation and remove colliders to stop unit interacting with others
         isAlive = false;
         enemyAnim.SetBool("isDead", true);
         Destroy(gameObject.GetComponent<Rigidbody>());

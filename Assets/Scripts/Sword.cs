@@ -5,20 +5,14 @@ using UnityEngine;
 public class Sword : MonoBehaviour
 {
     public GameObject target;
-    public AudioSource hitEnemy;
+    [SerializeField] private AudioSource hitEnemy;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Update()
     {
-
+        
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    // Track GameObject infront of unit
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.CompareTag("Enemy") || other.gameObject.CompareTag("Player"))
@@ -27,6 +21,7 @@ public class Sword : MonoBehaviour
         }
     }
 
+    // If GameObject leaves area infront of unit, set target to null
     private void OnTriggerExit(Collider other)
     {
         target = null;
@@ -35,15 +30,21 @@ public class Sword : MonoBehaviour
 
     public void DamageTarget()
     {
-        if (target.CompareTag("Enemy"))
+        // If a GameObject is infront of target, damage it. Reset target to null incase GameObject is destroyed and OnTriggerExit doesn't run
+        if (target != null)
         {
-            target.GetComponent<EnemyHP>().TakeDamage();
-            hitEnemy.Play();
-        }
-        else if (target.CompareTag("Player"))
-        {
-            target.GetComponent<PlayerController>().TakeDamage();
-            hitEnemy.Play();
+            if (target.CompareTag("Enemy"))
+            {
+                target.GetComponent<EnemyHP>().TakeDamage();
+                hitEnemy.Play();
+                target = null;
+            }
+            else if (target.CompareTag("Player"))
+            {
+                target.GetComponent<PlayerController>().TakeDamage();
+                hitEnemy.Play();
+                target = null;
+            }
         }
     }
 }

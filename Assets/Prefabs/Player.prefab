@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8850111702382764316}
   - component: {fileID: 8850111702382764307}
   - component: {fileID: 1534924545}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -312,16 +312,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b917933d351a9946b2fad7f1c393a1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerHealth: 0
+  moveSpeed: 6
+  damping: 50
   sword: {fileID: 8850111702382764305}
+  attackCooldown: 1
+  footsteps: {fileID: 0}
   deathSource: {fileID: 2962670719252436386}
   deathSounds:
   - {fileID: 8300000, guid: 8d21fb51e5efb384d8f1bc901d745102, type: 3}
   - {fileID: 8300000, guid: 4062ee2e4f4f0ab4d8d846e23be0d40c, type: 3}
   - {fileID: 8300000, guid: 252c0fef24af2684296a68fa4bce145d, type: 3}
-  playerHP: 5
-  attackCooldown: 1
-  attackCountdown: 0
-  attackSpeed: 0.3
 --- !u!54 &8850111703039596985
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -470,7 +471,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 7ecfbd0bc2656e24ba927115e40708f5, type: 3}
   - {fileID: 8300000, guid: 449624e6780dfda4b9ef6d156fa12662, type: 3}
   - {fileID: 8300000, guid: dc06f0d8d42e8c54395bfdc78351c293, type: 3}
-  stepGap: 0.36
 --- !u!1001 &1258182030177295256
 PrefabInstance:
   m_ObjectHideFlags: 0

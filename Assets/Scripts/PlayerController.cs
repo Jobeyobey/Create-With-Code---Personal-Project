@@ -5,29 +5,33 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private GameManager gameManager;
+    private Rigidbody playerRb;
+    private Animator playerAnim;
 
-    // Movement variables
-    private Footsteps footsteps;
-    private float moveSpeed = 6f;
+    // Player Status
+    public int playerHealth;
+    private bool isAlive = true;
+
+    // Movement
+    [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] private int damping = 50;
     private float xBound = 15f;
     private float zBound = 4f;
     private Vector3 oldPosition;
     private Vector3 newPosition;
     private Vector3 lookDir;
-    private int damping = 50;
 
-    // Other variables
-    public GameObject sword;
-    public AudioSource deathSource;
-    public AudioClip[] deathSounds;
-    private int randomSound;
-    private Rigidbody playerRb;
-    private Animator playerAnim;
-    public int playerHP = 5;
-    public float attackCooldown = 1.0f;
-    public float attackCountdown = 0;
-    public float attackSpeed = 0.3f;
-    private bool isAlive = true;
+    // Attacking
+    [SerializeField] private GameObject sword;
+    [SerializeField] private float attackCooldown = 1.0f;
+    private float attackCountdown = 0;
+    private float attackSpeed = 0.3f;
+
+    // Audio
+    [SerializeField] private Footsteps footsteps;
+    [SerializeField] private AudioSource deathSource;
+    [SerializeField] private AudioClip[] deathSounds;
+    private int randomDeathSound;
 
     // Start is called before the first frame update
     void Start()
@@ -64,7 +68,7 @@ public class PlayerController : MonoBehaviour
         // Save current position for rotation later
         oldPosition = transform.position;
 
-        // Reset movement to 0
+        // Reset movement values to 0
         float moveX = 0f;
         float moveZ = 0f;
 
@@ -90,17 +94,23 @@ public class PlayerController : MonoBehaviour
         Vector3 moveDir = new Vector3(moveX, 0.0000001f, moveZ).normalized;
         transform.position += moveDir * Time.deltaTime * moveSpeed;
 
-        // Save new position for rotation
+        // Save new position for rotation later
         newPosition = transform.position;
 
         // If moving, face direction of travel
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
         {
-            footsteps.WalkSound();
             lookDir = (newPosition - oldPosition).normalized;
-            var rotation = Quaternion.LookRotation(lookDir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
+
+            if (lookDir != Vector3.zero)
+            {
+                var rotation = Quaternion.LookRotation(lookDir);
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
+            }
+
+            // Play running animation and sound
             playerAnim.SetBool("isRunning", true);
+            footsteps.WalkSound();
         }
         else
         {
@@ -110,18 +120,24 @@ public class PlayerController : MonoBehaviour
 
     private void CheckAttack()
     {
-        // Attack
         if (Input.GetKey(KeyCode.Space) && (Time.time - attackCountdown) > attackCooldown)
         {
-            // Run attack animation
+            // Play attack animation
             playerAnim.SetTrigger("doAttack");
 
             // Reset attack cooldown
             attackCountdown = Time.time;
 
-            // Run sword hit routine (Delays damage by 0.3f to line up with animation)
+            // Run sword hit routine (Delays damage to line up with animation)
             StartCoroutine(SwordDelay());
         }
+    }
+
+    private IEnumerator SwordDelay()
+    {
+        // Delay sword hit to time with animation
+        yield return new WaitForSeconds(attackSpeed);
+        sword.GetComponent<Sword>().DamageTarget();
     }
 
     private void CheckBlock()
@@ -140,20 +156,18 @@ public class PlayerController : MonoBehaviour
     {
         if (isAlive)
         {
-            randomSound = Random.Range(0, deathSounds.Length);
-            deathSource.clip = deathSounds[randomSound];
+            // Play a random death sound
+            randomDeathSound = Random.Range(0, deathSounds.Length);
+            deathSource.clip = deathSounds[randomDeathSound];
             deathSource.Play();
 
+            // Play death animation
             playerAnim.SetBool("isDead", true);
+
+            // Game over
             gameManager.GameOver("Player Dead");
             isAlive = false;
         }
-    }
-
-    private IEnumerator SwordDelay()
-    {
-        yield return new WaitForSeconds(attackSpeed);
-        sword.GetComponent<Sword>().DamageTarget();
     }
 
     public void TakeDamage()
@@ -161,23 +175,25 @@ public class PlayerController : MonoBehaviour
         // Only take damage if player isn't blocking
         if (!playerAnim.GetBool("isBlocking"))
         {
-            playerHP -= 1;
+            playerHealth -= 1;
 
-            if (playerHP < 0)
+            // Do not let health drop below 0
+            if (playerHealth < 0)
             {
-                playerHP = 0;
+                playerHealth = 0;
             }
 
-            if (playerHP == 0)
+            // Kill player if health is 0
+            if (playerHealth == 0)
             {
                 PlayerDeath();
             }
         }
     }
 
-    public void HealPlayer()
+    public void HealPlayer(int healAmount)
     {
-        playerHP += 1;
+        playerHealth += healAmount;
     }
 
     // Keep player in bounds

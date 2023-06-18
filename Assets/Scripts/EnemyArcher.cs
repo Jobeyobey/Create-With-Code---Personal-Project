@@ -5,29 +5,32 @@ using UnityEngine;
 public class EnemyArcher : MonoBehaviour
 {
     private GameManager gameManager;
-    public AudioSource bowSound;
-    private GameObject target;
-    private Rigidbody enemyRb;
     private Animator enemyAnim;
-    public GameObject arrowPrefab;
-    private Footsteps footsteps;
-    public AudioSource deathSource;
-    public AudioClip[] deathSounds;
+    private Vector3 castlePosition;
+    [SerializeField] private GameObject arrowPrefab;
 
+    // Status
     private bool isAlive = true;
-    public int damping = 50;
-    public float speed = 1f;
-    public bool inPosition = false;
-    public bool isFiring = false;
+    private bool isFiring = false;
+
+    // Movement
+    [SerializeField] private float attackPosition = -4;
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private int damping = 2;
+
+    // Audio
+    [SerializeField] private AudioSource bowSound;
+    [SerializeField] private Footsteps footsteps;
+    [SerializeField] private AudioSource deathSource;
+    [SerializeField] private AudioClip[] deathSounds;
 
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         footsteps = GetComponentInChildren<Footsteps>();
-        target = GameObject.Find("Castle");
-        enemyRb = GetComponent<Rigidbody>();
         enemyAnim = GetComponentInChildren<Animator>();
+        castlePosition = GameObject.Find("Castle").GetComponent<Transform>().position;
     }
 
     // Update is called once per frame
@@ -35,37 +38,34 @@ public class EnemyArcher : MonoBehaviour
     {
         if (gameManager.gameStatus != "Castle Destroyed" && isAlive)
         {
-            // Move towards castle
-            if (!inPosition)
+            // If not in position to fire
+            if (transform.position.x < attackPosition)
             {
+                // Move towards castle
                 transform.Translate(Vector3.forward * Time.deltaTime * speed);
+                enemyAnim.SetBool("isRunning", true);
+                footsteps.WalkSound();
 
                 // Keep unit on floor
                 transform.position = new Vector3(transform.position.x, 0.5f, transform.position.z);
 
-                // If archer was firing, cancel
+                // If archer was firing, cancel (because not in position)
                 if (isFiring)
                 {
                     CancelInvoke();
                     isFiring = false;
                 }
-
-                enemyAnim.SetBool("isRunning", true);
-                footsteps.WalkSound();
             }
-
-            // Check if in position to fire
-            if (transform.position.x > -4)
+            else // If in position to fire
             {
+                enemyAnim.SetBool("isRunning", false);
+
                 // Begin firing
                 if (!isFiring)
                 {
                     InvokeRepeating("Attack", 1, 3);
                     isFiring = true;
                 }
-
-                inPosition = true;
-                enemyAnim.SetBool("isRunning", false);
             }
 
             // Look towards castle
@@ -76,17 +76,21 @@ public class EnemyArcher : MonoBehaviour
         // If castle is destroyed
         else if (gameManager.gameStatus == "Castle Destroyed" && isAlive)
         {
+            // Cancel firing, start running
             CancelInvoke();
             enemyAnim.SetBool("isRunning", true);
             footsteps.WalkSound();
 
-            var moveDir = new Vector3(20, 0.5f, 0) - transform.position;
+            // Move towards castle centre
+            var moveDir = new Vector3(castlePosition.x + 2, 0.5f, castlePosition.z) - transform.position;
             transform.Translate(moveDir.normalized * Time.deltaTime * speed, Space.World);
 
+            // Look in direction of movement
             var rotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * damping);
         }
 
+        // Destroy unit upon entering castle
         if (transform.position.x > 18)
         {
             Destroy(gameObject);
@@ -95,30 +99,32 @@ public class EnemyArcher : MonoBehaviour
 
     void Attack()
     {
-        // Attack animation
+        // Play attack animation
         enemyAnim.SetTrigger("doAttack");
 
-        // Arrow spawn
+        // Spawn arrow with delay for animation
         StartCoroutine(FireArrow());
     }
 
     IEnumerator FireArrow()
     {
+        // Delay arrow instantiation for animation
         yield return new WaitForSeconds(0.5f);
 
-        // Arrow spawn position
         Vector3 spawnPos = new Vector3(transform.position.x + 1, 1.5f, transform.position.z);
-        bowSound.Play();
-
         Instantiate(arrowPrefab, spawnPos, arrowPrefab.transform.rotation);
+
+        bowSound.Play();
     }
 
     public void Death()
     {
+        // Play random death sound
         var randomSound = Random.Range(0, deathSounds.Length);
         deathSource.clip = deathSounds[randomSound];
         deathSource.Play();
 
+        // Run death animation, stop arrow invocation and remove colliders to stop unit interacting with others
         isAlive = false;
         CancelInvoke();
         enemyAnim.SetBool("isDead", true);

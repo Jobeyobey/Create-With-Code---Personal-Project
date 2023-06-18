@@ -7,70 +7,81 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    // Core Variables
+    // Game Status
     public string gameStatus = "Menu";
     public bool isGameActive = false;
-    public GameObject titleScreen;
-    public GameObject gameOverScreen;
-    public TextMeshProUGUI gameOverTitle;
-    public Button startButton;
-    public Button restartButton;
 
-    // Castle
-    public GameObject castleDoors;
-    public int castleHP = 100;
-    public AudioSource gateSound;
-    public TextMeshProUGUI castleText;
+    // Start and Game Over menu
+    [SerializeField] private GameObject titleScreen;
+    [SerializeField] private Button startButton;
+    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] private TextMeshProUGUI gameOverTitle;
+    [SerializeField] private Button restartButton;
 
-    // Player
+    // Game Objects
+    [SerializeField] private GameObject castleDoors;
     private PlayerController playerController;
-    public int playerHP = 5;
-    public TextMeshProUGUI playerText;
+
+    // Castle and Player health
+    [SerializeField] private TextMeshProUGUI castleText;
+    [SerializeField] private TextMeshProUGUI playerText;
+    [SerializeField] private int castleMaxHP = 100;
+    [SerializeField] private int playerHP = 5;
+    private int currentCastleHP;
 
     // Prefabs
-    public GameObject[] enemyBasic;
-    public GameObject enemyHunter;
-    public GameObject armourUp;
+    [SerializeField] private GameObject[] enemyBasic;
+    [SerializeField] private GameObject enemyHunter;
+    [SerializeField] private GameObject armourUp;
 
     // Enemy spawn and movement restrictions
+    [SerializeField] private float basicEnemySpawnRate = 3;
+    [SerializeField] private float hunterSpawnRate = 15;
+    [SerializeField] private float armourSpawnRate = 20;
     private float enemySpawnX = -25f;
     private float spawnY = 0.5f;
     private float boundZ = 4f;
-
-    // Armour spawn restrictions
     private float armourBoundX = 14f;
 
-    // Sound
-    public AudioSource startHorn;
+    // Audio
+    [SerializeField] private AudioSource gateSound;
+    [SerializeField] private AudioSource startHorn;
 
-    // Start is called before the first frame update
-    public void StartGame()
+    void Awake()
     {
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
-        playerController.playerHP = playerHP;
+    }
 
+    public void StartGame()
+    {
+        // Set player and castle HP
+        playerController.playerHealth = playerHP;
+        currentCastleHP = castleMaxHP;
+
+        // Start game
         titleScreen.gameObject.SetActive(false);
         isGameActive = true;
-        castleHP = 100;
         startHorn.Play();
 
-        InvokeRepeating("SpawnBasicEnemy", 2, 3);
-        InvokeRepeating("SpawnHunter", 15, 15);
-        InvokeRepeating("SpawnArmour", 10, 20);
+        // Set enemy spawn invokes
+        InvokeRepeating("SpawnBasicEnemy", basicEnemySpawnRate, basicEnemySpawnRate);
+        InvokeRepeating("SpawnHunter", hunterSpawnRate, hunterSpawnRate);
+        InvokeRepeating("SpawnArmour", armourSpawnRate, armourSpawnRate);
     }
 
     // Update is called once per frame
     void Update()
     {
-        castleText.text = "Castle: " + castleHP;
-        playerText.text = "Player: " + playerController.playerHP;
+        // User UI
+        castleText.text = "Castle: " + currentCastleHP;
+        playerText.text = "Player: " + playerController.playerHealth;
     }
 
     // Prefab Spawning
     void SpawnBasicEnemy()
     {
         // Pick Swordsman(0) or Archer(1) and spawn at random Z location
-        int enemyIndex = Random.Range(0, 2);
+        int enemyIndex = Random.Range(0, enemyBasic.Length);
         float randomSpawnZ = Random.Range(-boundZ, boundZ);
         Vector3 randomSpawnPos = new Vector3(enemySpawnX, spawnY, randomSpawnZ);
         Instantiate(enemyBasic[enemyIndex], randomSpawnPos, enemyBasic[enemyIndex].transform.rotation);
@@ -96,20 +107,20 @@ public class GameManager : MonoBehaviour
     public void AdjustCastleHP(int adjustment)
     {
         // Make health adjustment
-        castleHP += adjustment;
+        currentCastleHP += adjustment;
 
         // Cap castle HP between 0 and 100
-        if (castleHP < 0)
+        if (currentCastleHP < 0)
         {
-            castleHP = 0;
+            currentCastleHP = 0;
         }
-        else if (castleHP > 100)
+        else if (currentCastleHP > castleMaxHP)
         {
-            castleHP = 100;
+            currentCastleHP = castleMaxHP;
         }
 
         // If castleHP falls to 0, game over
-        if (castleHP == 0)
+        if (currentCastleHP == 0)
         {
             gateSound.Play();
             castleDoors.gameObject.SetActive(false);

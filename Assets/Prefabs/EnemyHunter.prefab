@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2628630965782652098}
   - component: {fileID: 2770986940634911360}
   - component: {fileID: 6488205600868174172}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sword
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -343,18 +343,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f135a545d2e0804aa71e6e8e1ef83c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sword: {fileID: 870997974477165043}
+  speed: 5
+  damping: 50
+  attackDistance: 1
+  attackCooldown: 1.5
   deathSource: {fileID: 212059507992632622}
   deathSounds:
   - {fileID: 8300000, guid: 8d21fb51e5efb384d8f1bc901d745102, type: 3}
   - {fileID: 8300000, guid: 4062ee2e4f4f0ab4d8d846e23be0d40c, type: 3}
   - {fileID: 8300000, guid: 252c0fef24af2684296a68fa4bce145d, type: 3}
-  sword: {fileID: 870997974477165043}
-  speed: 5
-  damping: 50
-  attackCooldown: 1.5
-  attackCountdown: 0
-  attackSpeed: 0.5
-  isAttacking: 0
 --- !u!114 &8817211638956297592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,7 +403,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 7ecfbd0bc2656e24ba927115e40708f5, type: 3}
   - {fileID: 8300000, guid: 449624e6780dfda4b9ef6d156fa12662, type: 3}
   - {fileID: 8300000, guid: dc06f0d8d42e8c54395bfdc78351c293, type: 3}
-  stepGap: 0.36
 --- !u!82 &3581690773833530240
 AudioSource:
   m_ObjectHideFlags: 0

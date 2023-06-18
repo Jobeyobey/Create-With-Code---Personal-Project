@@ -131,19 +131,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 605ec45140089594fbccd6d48c5f8243, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  atCastle: 0
+  speed: 5
+  damping: 2
+  attackPosition: 15
+  attackCooldown: 1.5
+  attackDamage: 2
   stoneSound: {fileID: 4118702081171437958}
   deathSource: {fileID: 2657182390708378482}
   deathSounds:
   - {fileID: 8300000, guid: 8d21fb51e5efb384d8f1bc901d745102, type: 3}
   - {fileID: 8300000, guid: 4062ee2e4f4f0ab4d8d846e23be0d40c, type: 3}
   - {fileID: 8300000, guid: 252c0fef24af2684296a68fa4bce145d, type: 3}
-  damping: 2
-  speed: 5
-  atCastle: 0
-  attackCooldown: 1.5
-  attackCountdown: 0
-  attackSpeed: 0.3
-  attackDamage: 2
 --- !u!114 &-4132004675462092616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,7 +179,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 7ecfbd0bc2656e24ba927115e40708f5, type: 3}
   - {fileID: 8300000, guid: 449624e6780dfda4b9ef6d156fa12662, type: 3}
   - {fileID: 8300000, guid: dc06f0d8d42e8c54395bfdc78351c293, type: 3}
-  stepGap: 0.36
 --- !u!82 &-1300991389835662263
 AudioSource:
   m_ObjectHideFlags: 0
